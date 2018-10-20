@@ -5,7 +5,7 @@
     "Ryan Saunders"
   ],
   "license": "BSD-3-Clause",
-  "repository": "rhyeen/microfront_reference_comp2",
+  "repository": "rhyeen/microfront_reference",
   "scripts": {},
   "dependencies": {
     "@polymer/lit-element": "^0.6.2",
