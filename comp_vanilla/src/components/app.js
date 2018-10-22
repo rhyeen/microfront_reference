@@ -7,17 +7,13 @@ compVanilla_template.innerHTML = `
       display: block;
     }
   </style>
-  <div><slot name="container-title">NO TITLE</slot></div>
+  <div><slot name="container-title" onchange="test()">NO TITLE</slot></div>
   <slot name="container-inputs">NO INPUTS</slot>
 `;
-
-// ShadyCSS will rename classes as needed to ensure style scoping.
-// ShadyCSS.prepareTemplate(compVanilla_template, 'comp-vanilla');
 
 class CompVanilla extends HTMLElement {
   constructor() {
     super();
-    this._onSlotChange = this._onSlotChange.bind(this);
 
     this.attachShadow({mode: 'open'});
     this.shadowRoot.appendChild(compVanilla_template.content.cloneNode(true));
@@ -25,24 +21,97 @@ class CompVanilla extends HTMLElement {
     this._containerTitleSlot = this.shadowRoot.querySelector('slot[name=container-title]');
     this._containerInputsSlot = this.shadowRoot.querySelector('slot[name=container-inputs]');
 
-    this._containerTitleSlot.addEventListener('slotchange', this._onSlotChange);
-    this._containerInputsSlot.addEventListener('slotchange', this._onSlotChange);
+    this._componentList = [
+      {
+        id: '1',
+        component: 'comp1',
+        updateContainerTitle: 'COMP_1_UPDATE_TITLE'
+      },
+      {
+        id: '2',
+        component: 'comp1',
+        updateContainerTitle: 'COMP_1_UPDATE_TITLE'
+      },
+      {
+        id: '1',
+        component: 'comp2',
+        updateContainerTitle: 'COMP_2_UPDATE_TITLE'
+      },
+      {
+        id: '5',
+        component: 'compVanilla',
+        updateContainerTitle: 'COMP_VANILLA_UPDATE_TITLE'
+      }
+    ];
 
-    this.render();
-    store.subscribe(render);
+    this._render(store.getState());
+    this._toObservable(store, this).subscribe({
+      onNext(state, caller) { caller._render(state) }
+    });
   }
 
   /**
-   * `_onSlotChange()` is called whenever an element is added or removed from
-   * one of the shadow DOM slots.
+   * https://github.com/reduxjs/redux/issues/303#issuecomment-125184409
    */
-  _onSlotChange() {
-    // this._linkPanels();
+  _toObservable(store, caller) {
+    return {
+      subscribe({ onNext }) {
+        let dispose = store.subscribe(() => onNext(store.getState(), caller));
+        onNext(store.getState(), caller);
+        return { dispose };
+      }
+    }
   }
 
-  render() {
-    const state = store.getState().compVanilla;
-    debugger;
+  _render(state) {
+    this._container = state.compVanilla.containers[this.getAttribute('containerId')];
+    this._isLocked = state.compVanilla.locked;
+    this._setAllComponentContainers(state);
+    this._setSlots();
+  }
+  
+  _setAllComponentContainers(state) {
+    this._componentContainers = this._componentList.map((comp) => {
+      if (!(comp.component in state)) {
+        return {
+          ...comp,
+          title: 'NA'
+        };
+      }
+      return {
+        ...comp,
+        title: state[comp.component].containers[comp.id].title
+      };
+    });
+  }
+
+  _setSlots() {
+    this._removeInputsFromSlot();
+    this._containerTitleSlot.innerHTML = this._container.title;
+    this._componentContainers.forEach((comp) => {
+      let containerInput = document.createElement('input');
+      containerInput.value = comp.title;
+      containerInput.id = comp.id + '___' + comp.component + '___' + comp.updateContainerTitle;
+      containerInput.onchange = this._updateTitle;
+      containerInput.addEventListener('change', this._updateTitle);
+      this._containerInputsSlot.appendChild(containerInput);
+    });
+  }
+
+  _updateTitle(event) {
+    const value = event.target.value;
+    const id = event.target.id;
+    const splitId = id.split('___');
+    const containerId = splitId[0];
+    const updateContainerTitle = splitId[2];
+    store.dispatch({ type: updateContainerTitle, id: containerId, title: value });
+  }
+
+  _removeInputsFromSlot() {
+    while (this._containerInputsSlot.firstChild) {
+      this._containerInputsSlot.firstChild.removeEventListener('change', this._updateTitle);
+      this._containerInputsSlot.removeChild(this._containerInputsSlot.firstChild);
+    }
   }
 
   /**
@@ -100,15 +169,6 @@ class CompVanilla extends HTMLElement {
 
   get containerId() {
     return this.hasAttribute('containerId');
-  }
-
-  /**
-   * `attributeChangedCallback()` is called when any of the attributes in the
-   * `observedAttributes` array are changed. It's a good place to handle
-   * side effects, like setting internal attributes.
-   */
-  attributeChangedCallback(name, oldValue, newValue) {
-
   }
 }
 window.customElements.define('comp-vanilla', CompVanilla);
