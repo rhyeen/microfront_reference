@@ -1,3 +1,5 @@
+import store from '../store.js';
+
 const compVanilla_template = document.createElement('template');
 compVanilla_template.innerHTML = `
   <style>
@@ -25,6 +27,9 @@ class CompVanilla extends HTMLElement {
 
     this._containerTitleSlot.addEventListener('slotchange', this._onSlotChange);
     this._containerInputsSlot.addEventListener('slotchange', this._onSlotChange);
+
+    this.render();
+    store.subscribe(render);
   }
 
   /**
@@ -33,6 +38,11 @@ class CompVanilla extends HTMLElement {
    */
   _onSlotChange() {
     // this._linkPanels();
+  }
+
+  render() {
+    const state = store.getState().compVanilla;
+    debugger;
   }
 
   /**

@@ -4,7 +4,12 @@
     <meta charset="utf-8">
     <title>Comp Vanilla</title>
     <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="src/components/app.js" defer></script>
+    <script type="module" src="src/components/app.js"></script>
+    <script>
+        // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
+        // https://github.com/reactjs/redux/issues/2907
+        window.process = { env: { NODE_ENV: 'production' } };
+    </script>
 </head>
 <body>
     <comp-vanilla containerId="test"></comp-vanilla>
