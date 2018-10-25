@@ -1,0 +1,9 @@
+{
+  "name": "Microfront Reference React",
+  "short_name": "Microfront Reference React",
+  "description": "Microfront Reference React is a prototype to test assumptions about how to build out a microfront using web components + redux.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#222222",
+  "background_color": "#222222"
+}
