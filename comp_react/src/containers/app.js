@@ -1,4 +1,3 @@
-import { connect } from 'react-redux'
 import * as appActions from '../actions/app.js'
 import App from '../components/app.js'
 
@@ -19,7 +18,7 @@ const mapDispatchToProps = {
   unlock: appActions.unlock
 }
 
-export default connect(
+export default ReactRedux.connect(
   mapStateToProps,
   mapDispatchToProps
 )(App)

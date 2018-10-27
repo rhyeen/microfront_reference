@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+// import React, { Component } from 'react'
 
-class App extends Component {
+class App extends React.Component {
   handleInputUpdate(event) {
     const value = event.currentTarget.value
     const id = event.currentTarget.id
@@ -59,20 +59,27 @@ class App extends Component {
     })
 
     let componentControls = componentContainers.map(container => {
-      return (
-        <input
-            value={container.title}
-            onChange={this.handleInputUpdate.bind(this)}
-            key={container.id + '___' + container.component + '___' + container.updateContainerTitle}
-            id={container.id + '___' + container.component + '___' + container.updateContainerTitle}/>
+      let keyValue = container.id + '___' + container.component + '___' + container.updateContainerTitle;
+      return React.createElement(
+        'input',
+        {
+          value: container.title,
+          onChange: this.handleInputUpdate.bind(this),
+          key: keyValue,
+          id: keyValue
+        }
       )
     })
 
-    return (
-      <div>
-        <div>{containerTitle} :: {isLockedString}</div>
-        {componentControls}
-      </div>
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'div',
+        null,
+        `${containerTitle} :: ${isLockedString}`
+      ),
+      componentControls
     )
   }
 }

@@ -7,7 +7,7 @@
   "license": "BSD-3-Clause",
   "repository": "rhyeen/microfront_reference",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "polyserve",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   },
@@ -16,7 +16,8 @@
     "microfront_reference_store": "0.0.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
-    "react-redux": "^5.0.7"
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.1"
   },
   "devDependencies": {
     "react-scripts": "1.1.5",
