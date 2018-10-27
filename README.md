@@ -7,7 +7,11 @@
 
 * The overhead of including Redux is small. The shared store.js is not much larger (<5kb).
 * Use whatever ungreedy (aka, not Angular) Javascript framework/library you like for each component
-with a common interface between the components.
+with a common interface between the components. We personally recommend one of the following 
+standards for your components (you may choose different standards for each component):
+    * lit-html + lit-element
+    * VanillaJS + Web Components
+    * React wrapped in a Web Component
 * Since the interface is a global store, there are no cyclic dependencies on the Redux reducers.
 Component A can talk to Component B using the same protocol whether A is a child of B, a parent of
 B, a sibling of B, or nowhere near B.
