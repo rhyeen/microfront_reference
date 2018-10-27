@@ -3,7 +3,7 @@
 ## TLDR;
 
 
-## Benefits
+### Benefits
 
 * The overhead of including Redux is small. The shared store.js is not much larger (<5kb).
 * Use whatever ungreedy (aka, not Angular) Javascript framework/library you like for each component
@@ -20,7 +20,7 @@ B, a sibling of B, or nowhere near B.
     will always be consisent across all components that bind to it.
     * Redux is performant and works with thousands of actions before slowdown.
 
-## What This Isn't
+### What This Isn't
 
 This method requires that all components much agree upon the shared protocols. Of course, 
 unsupported components can either be encapsulated to incude support with a wrapper component, 
@@ -34,11 +34,11 @@ and another `foo@v2.0.0`, nothing here will help you resolve this.
 For this reason, it's best to follow this protocol for sharing components within your own 
 team/organization where you can uphold the protocol and manage dependencies cross teams.
 
-## Converting Existing Components (React, specifically)
+### Converting Existing Components (React, specifically)
 
-# @TODO
+## @TODO
 
-## React Component
+### React Component
 Since I've never personally worked with React enough to understand how to wrap it in a web component
 using ES6 standards (rather than the ES5 `require` standards), my efforts have been unfruitful...
 
@@ -49,6 +49,6 @@ not be a conflict with the standards we have here.
 2. Publish [React Component](comp_react)
 3. Pull [React Component](comp_react) into [Root App](root_reference) and update `componentList` to contain the [React Component's Reducer](comp_react/src/reducers/app.js).
 
-## Compatible Store Package
+### Compatible Store Package
 I'd like to create an official very small npm package for the shared store, which will simply be
 the [shared store.js file](store/src/store.js), but with an included transpiler for older browsers.
