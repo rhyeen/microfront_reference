@@ -33,11 +33,18 @@ export const store = createStore(
     applyMiddleware(thunk))
 );
 
+/**
+ * A singleton-like object for guaranteeing unique component keys so that multiple
+ * instances of a component's state may be instantiated and passed to a component.
+ */
 export const keyFactory = {
   containerIds: {},
+  // examines the keys on the given container object and stores them as a set 
+  // under the given containerId
   storePreexistingKeys: (containerId, container) => {
     _storeKeys(containerId, Object.keys(container))
   },
+  // returns a key value that is unique for the set under the given containerId
   getUniqueKey: (containerId) => {
     this._initializeContainer(containerId)
     let key = null
@@ -47,10 +54,12 @@ export const keyFactory = {
     this._storeKey(containerId, key)
     return key
   },
+  // removes the given key from the set under the given containerId
   removeKey: (containerId, key) => {
     this._initializeContainer(containerId)
     this.containerIds[containerId].remove(key)
   },
+  // removes all the keys from the set under the given containerId
   clear: (containerId) => {
     this._initializeContainer(containerId)
     this.containerIds[containerId].clear()
