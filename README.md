@@ -214,7 +214,21 @@ state = {
 }
 ```
 
-## Benefits
+#### Final Considerations
+
+Finally, just like any API contract, this is the point of interfacing and coupling. Ensure the state
+is well defined and structured.  We close this section with the following two additional
+recommendations:
+
+1. When utilizing the state data inside `entities[<CONTAINER KEY>]`, `named[<UNIQUE NAME>]`, and 
+`all` and the data is not intended to be retrieved outside of the component, we recommend wrapping 
+that data in an object titled `private` (e.g. `"entities": { "1345rdq23": { "private": { "openModal": true }}}`).  The properties of `private` are assumed to be mutated without breaking the API.
+2. When creating the Redux Actions that will update the state, be mindful of the given Actions and
+the validity of its parameters. The Actions are just as part of the API as the Store state.  The
+reason we don't dive into recommended practices for Actions is that the standards that Redux already
+expresses for Actions is sufficient.
+
+## Benefits of this standard
 
 * The overhead of including Redux is small. The shared store.js is not much larger (<5kb).
 * Use whatever ungreedy (aka, not Angular) Javascript framework/library you like for each component
