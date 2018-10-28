@@ -50,22 +50,43 @@ to do so, thus preventing unexpected side effects when managing its own state.
 ## Proposal
 
 We propose this may be achieved under some basic assumptions:
-1. Redux is centric to the API.  All components that want to utilize the API will need to utilize 
+1. Components should be encaspulated in a [Web Component](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
+2. Redux is centric to the API.  All components that want to utilize the API will need to utilize 
 Redux.
-2. A shared Redux store across all components utilizing the API will ensure any component may
+3. A shared Redux store across all components utilizing the API will ensure any component may
 make any available API call.
-3. The state of the Redux store **must** conform to the presented standard.  If a single component
+4. The state of the Redux store **must** conform to the presented standard.  If a single component
 does not conform, the whole system becomes vulnerable.  Fortunately, any component that doesn't
 want to conform may still utilize Redux fully as long as they use a separate store.
 
-### Requirement 1: Redux as the API
+### Requirement 1: Components should be Web Components
+
+Any component that is considered a Microfront should be encapsulated in a [custom element](https://developer.mozilla.org/en-US/docs/Web/Web_Components#Custom_elements).  If your
+component utilizes lit-html, Polymer, or VanillaJS, this should be as simple as following the
+web component standards, and may already be part of your componetization process.  If you're using
+React, this requires a bit more work since React is generally injected on a root element of the page.
+
+There are two caveats to this requirement.  First, not all components needs to be encapsulated in a custom element.  You may develop a complex React "component" that has many child components and this
+outer component is meant to behave like a widget on a page.  Only the outer component needs to be a 
+web component so that it can be easily shared with other teams or in other projects that want to 
+utilize that component.  Generally, at least each front-end repo of a module should be its own web
+ component.
+
+Second, not all web components need to meet these requirments.  We encourage more simple components
+simply utilize attributes, properties, and events, as is encouraged for typical web components.
+Generally, if a web component has a direct relationship with its parent entity and/or it can be
+easily managed through attributes, properties, and events, it doesn't need to follow these practices.
+Redux can handle a lot of actions and a complex state very efficiently, but keeping trivial behavior
+off of the Redux store will help longterm with very large projects.
+
+### Requirement 2: Redux as the API
 
 We assume you are already aware of the benefits of Redux.  If not, you should familiarize yourself
 with this small but powerful library.  Redux can be included in almost any Frontend standard.
 If long as the Microfront components include Redux and do not directly control the DOM (looking
 at you Angular...), you'll likely be able to use that library/framework/standard.
 
-### Requirement 2: Global Redux Store
+### Requirement 3: Global Redux Store
 
 Generally, standards like React that utilize Redux already have a single root Redux store.  However,
 this is typically because something like React acts like a web app more than a single component on
@@ -80,7 +101,7 @@ components that utilize it.
 We developed a very small npm package for doing just that.  Feel free to import it into your own
 projects.
 
-### Requirement 3: Store state conforms to a standard
+### Requirement 4: Store state conforms to a standard
 
 This is the part that the most subjective.  Although an agreed upon store state is required since
 the store state is shared across all components, what that state format looks like is up for debate.
@@ -88,6 +109,63 @@ We've chosen the following practice, and we encourage you do adhere to it or pic
 for your own organization.  Whatever you decide, you must be willing to let this standard remain
 unchanged for the foreseeable lifecycle of your product.  Our suggested standard for the shared
 Redux state looks like this:
+
+``` json
+state = {
+    "<NPM PACKAGE NAME>": {...},
+    ...
+}
+```
+
+Where `<NPM PACKAGE NAME>` is the unique name of the component that owns that particular part of
+the state.  Even if a component is not explicitely an npm package, thinking of it such will ensure
+the state key is unique and recognizable.
+
+That is all that is needed on the state to ensure these standards are met.  However, we do suggest
+how to compose the inners of this object to make your Microfront component more conveniant to use
+and easier to maintain (See **#Advanced Redux State Suggestions** for more details).
+
+## Benefits of this standard
+
+* The overhead of including Redux is small. The shared store.js is not much larger (<5kb).
+* Use whatever ungreedy (aka, not Angular) Javascript framework/library you like for each component
+with a common interface between the components. We personally recommend one of the following 
+standards for your components (you may choose different standards for each component):
+    * lit-html + lit-element
+    * VanillaJS + Web Components
+    * React wrapped in a Web Component
+* Since the interface is a global store, there are no cyclic dependencies on the Redux reducers.
+Component A can talk to Component B using the same protocol whether A is a child of B, a parent of
+B, a sibling of B, or nowhere near B.
+* All the benefits of Redux:
+    * Actions (aka API calls) are the only way to mutate the underlying state.  These actions have
+    specified parameters and can verify parameters before updating the state.
+    * The underlying state history is preserved and can be monitored/reverted using conventional 
+    Redux tools.
+    * Redux notifies subscribers to the store of changes to the underyling state, meaning the data
+    will always be consisent across all components that bind to it.
+    * Redux is performant and works with thousands of actions before slowdown.
+
+## What This Isn't
+
+This method requires that all components much agree upon the shared protocols. Of course, 
+unsupported components can either be encapsulated to incude support with a wrapper component, 
+converted to adhere to the protocol, or just used as they were designed (with properties, 
+attributes, events, etc.).  On the other hand, you shouldn't expect the general community to embrace
+these standards when you are publishing an npm package for general use.
+
+This is also not a means to manage conflicting dependencies.  If one component utilizes `foo@v1.0.0`
+and another `foo@v2.0.0`, nothing here will help you resolve this.
+
+For this reason, it's best to follow this protocol for sharing components within your own 
+team/organization where you can uphold the protocol and manage dependencies cross teams.
+
+## Advanced Redux State Suggestions
+
+If you'd like to ensure your web component can handle many possible cases, such as being utilized
+several times within the root app and each entity requires its own state.  We recommend the 
+following additions to the API. Note that each Microfront component can choose to follow these
+standards or not and does not require all components in the root app to conform.
 
 ``` json
 state = {
@@ -227,41 +305,6 @@ that data in an object titled `private` (e.g. `"entities": { "1345rdq23": { "pri
 the validity of its parameters. The Actions are just as part of the API as the Store state.  The
 reason we don't dive into recommended practices for Actions is that the standards that Redux already
 expresses for Actions is sufficient.
-
-## Benefits of this standard
-
-* The overhead of including Redux is small. The shared store.js is not much larger (<5kb).
-* Use whatever ungreedy (aka, not Angular) Javascript framework/library you like for each component
-with a common interface between the components. We personally recommend one of the following 
-standards for your components (you may choose different standards for each component):
-    * lit-html + lit-element
-    * VanillaJS + Web Components
-    * React wrapped in a Web Component
-* Since the interface is a global store, there are no cyclic dependencies on the Redux reducers.
-Component A can talk to Component B using the same protocol whether A is a child of B, a parent of
-B, a sibling of B, or nowhere near B.
-* All the benefits of Redux:
-    * Actions (aka API calls) are the only way to mutate the underlying state.  These actions have
-    specified parameters and can verify parameters before updating the state.
-    * The underlying state history is preserved and can be monitored/reverted using conventional 
-    Redux tools.
-    * Redux notifies subscribers to the store of changes to the underyling state, meaning the data
-    will always be consisent across all components that bind to it.
-    * Redux is performant and works with thousands of actions before slowdown.
-
-## What This Isn't
-
-This method requires that all components much agree upon the shared protocols. Of course, 
-unsupported components can either be encapsulated to incude support with a wrapper component, 
-converted to adhere to the protocol, or just used as they were designed (with properties, 
-attributes, events, etc.).  On the other hand, you shouldn't expect the general community to embrace
-these standards when you are publishing an npm package for general use.
-
-This is also not a means to manage conflicting dependencies.  If one component utilizes `foo@v1.0.0`
-and another `foo@v2.0.0`, nothing here will help you resolve this.
-
-For this reason, it's best to follow this protocol for sharing components within your own 
-team/organization where you can uphold the protocol and manage dependencies cross teams.
 
 ## Converting Existing Components (React, specifically)
 
