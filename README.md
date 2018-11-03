@@ -163,14 +163,14 @@ team/organization where you can uphold the protocol and manage dependencies cros
 ## Advanced Redux State Suggestions
 
 If you'd like to ensure your web component can handle many possible cases, such as being utilized
-several times within the root app and each entity requires its own state.  We recommend the 
+several times within the root app and each instance requires its own state.  We recommend the 
 following additions to the API. Note that each Microfront component can choose to follow these
 standards or not and does not require all components in the root app to conform.
 
 ``` json
 state = {
     "<NPM PACKAGE NAME>": {
-        "entities": {...},
+        "instances": {...},
         "named": {...},
         "all": {...}
     },
@@ -182,14 +182,15 @@ Where `<NPM PACKAGE NAME>` is the unique name of the component that owns that pa
 the state.  Even if a component is not explicitely an npm package, thinking of it such will ensure
 the state key is unique and recognizable.
 
-#### entities
+#### instances
 
-`entities` is an object that contains unique key/object pairs for each inserting component in the UI.
+`instances` is an object that contains unique key/object pairs for each inserted instance of the 
+component in the UI.
 
 ``` json
 ...
 "<NPM PACKAGE NAME>": {
-    "entities": {
+    "instances": {
         "<CONTAINER KEY>": {...},
         ...
     },
@@ -200,7 +201,7 @@ the state key is unique and recognizable.
 ```
 
 For example, if the component was a dropdown menu, there may be 4 places in the current DOM that 
-utilize this component.  In this case, there would be 4 key/object pairs in `entities`, all with a 
+utilize this component.  In this case, there would be 4 key/object pairs in `instances`, all with a 
 unique `<CONTAINER KEY>` values.
 
 These values can be randomly generated, assigned by a parent component, or assigned from an HTTP 
@@ -213,13 +214,15 @@ At this point, you can utilize the Redux state as you normally would inside `<CO
 for a set of common reducers.
 This should include the data that should update components states that present on it.
 
+We personally recommend following Redux's article on [Normalizing State Shape](https://redux.js.org/recipes/structuringreducers/normalizingstateshape) for this part of the state.
+
 `all` is similar, except state should be kept on here based on data that should impact
 all instantiations of the component.
 
 #### named
 
-`named` is reserved for instantiated entities of a component that may be categorized and thus
-share part of a state with similar entities:
+`named` is reserved for instantiated instances of a component that may be categorized and thus
+share part of a state with similar instances:
 
 ``` json
 ...
@@ -232,7 +235,7 @@ share part of a state with similar entities:
 
 For example, a custom button component may disable a set of the buttons on the page while an
 API request is being handled.  One could iterate over all such buttons and disable their individual
-`entities[<CONTAINER KEY>]` state, or just update the `"named": { "lockedOnRequest": { "disabled": true }}` and rely on the components with the appropriate attributes to know to bind to this state.
+`instances[<CONTAINER KEY>]` state, or just update the `"named": { "lockedOnRequest": { "disabled": true }}` and rely on the components with the appropriate attributes to know to bind to this state.
 
 #### Example
 
@@ -240,9 +243,9 @@ Let's suppose we have two Microfront components: one is a custom button (`custom
 the other is a card for selecting a a particular hotel reservation (`hotelReservationCard`).  
 The root app would pull down the list of possible reservations from the back-end, and create N 
 `hotelReservationCard` components, calling the `keyFactory` per component and passing the key
-as an attribute to each entity.
+as an attribute to each instance.
 
-Each `hotelReservationCard` entity in turn uses its own `customButton`. The `hotelReservationCard`
+Each `hotelReservationCard` instance in turn uses its own `customButton`. The `hotelReservationCard`
 will use its own key as the shared key for the `customButton`. Alternatively, it could have
 generated unique keys using the `keyFactory`.
 
@@ -251,7 +254,7 @@ The resulting state may look something like this:
 ``` json
 state = {
     "customButton": {
-        "entities": {
+        "instances": {
             "123456tfb": {},
             "13e23dsfe": {
                 "label": "Best Deal",
@@ -269,7 +272,7 @@ state = {
         }
     },
     "hotelReservationCard": {
-        "entities": {
+        "instances": {
             "123456tfb": {
                 "reservationDatetime": "2019-02-01T12:23:45.000Z",
                 "hotel": "Marriot",
@@ -298,9 +301,9 @@ Finally, just like any API contract, this is the point of interfacing and coupli
 is well defined and structured.  We close this section with the following two additional
 recommendations:
 
-1. When utilizing the state data inside `entities[<CONTAINER KEY>]`, `named[<UNIQUE NAME>]`, and 
+1. When utilizing the state data inside `instances[<CONTAINER KEY>]`, `named[<UNIQUE NAME>]`, and 
 `all` and the data is not intended to be retrieved outside of the component, we recommend wrapping 
-that data in an object titled `private` (e.g. `"entities": { "1345rdq23": { "private": { "openModal": true }}}`).  The properties of `private` are assumed to be mutated without breaking the API.
+that data in an object titled `private` (e.g. `"instances": { "1345rdq23": { "private": { "openModal": true }}}`).  The properties of `private` are assumed to be mutated without breaking the API.
 2. When creating the Redux Actions that will update the state, be mindful of the given Actions and
 the validity of its parameters. The Actions are just as part of the API as the Store state.  The
 reason we don't dive into recommended practices for Actions is that the standards that Redux already
