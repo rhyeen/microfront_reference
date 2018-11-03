@@ -1,6 +1,56 @@
 # A Microfront Architecture
 
+## TLDR; The Microfront API standards
+
+To fulfill this API standard, you'll need the following frontend app structure:
+
+* **A single root app:** a root app that has little-to-no UI presentation, but
+simply handles routing, importing, and injecting the appropriate base microfront components.
+* **Microfront components:** for any component that needs to coordinate with other components that are not directly related in the DOM tree to follow the Microfront API standard.
+* **Other components:** other components can also be utilized that don't follow the Microfront API standard, but they shouldn't be interacting with other components directly other than their parent component. This is typically reserved for simple components, such as buttons, dropdowns, banners, etc.
+
+For every codebase shared in the same root app (including microfront components, the root app, and all other components), it must meet the following requirements:
+
+* Be considerate of CSS namespacing. We recommend wrapping the outermost component in a web component to isolate the CSS by declaring all selectors relative to the `:root` selector of the custom element for the web component.  A lot of frameworks provide this functionality for you already. Alternatively,
+prepend your CSS selectors with a namespace of your codebase name or another unique name.
+* Be considerate of global event namespacing. For any event that can be listened to globaly, prepend the event with a namespace of your codebase name or another unique name.
+* Be considerate of global variable namespacing. Instead of global javascript variables, we recommend using the
+ES6 standard of importing/exporting Javascript modules.  Alternatively,
+prepend your global variables with a namespace of your codebase name or another unique name.
+* The Redux state that is connected to the root app is reserved for this Microfront API standard.
+* Ensure shared dependencies share the same version.  For example, if your organization typically uses React, make sure all teams that will share frontend code use the same version of React. If a shared codebase has a different version, it will need to include them in the built code as an isolated
+dependency.
+
+The root app must meet the following requirements:
+
+* It must connect to a shared Redux state. We recommend using our `microfront_store` npm package for this.
+* It must import and inject other components.
+* It must combine the reducers of all injected microfront components on the shared Redux state.
+
+For every microfront component (aka a component that wants utilize this API standard), it must meet the following requirements:
+
+* Encapsulate the component in a [Web Component](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
+* This outer web component needs to connect to the shared Redux state via a Javascript module import of the shared Redux state's npm package.  This shared state must conform to the format of:
+``` json
+state = {
+    "<NPM PACKAGE NAME>": {...},
+    ...
+}
+```
+where `<NPM PACKAGE NAME>` is a unique key specific to each microfront component.  All state of this microfront should be within its own `<NPM PACKAGE NAME>` object.
+* It should export Javascript modules for the Redux Actions that can be applied on its own part of
+the shared state.
+* For simple interactions directly with its parent element, it should use props/attributes.
+* For complex interaction with other microfront components, it should call that component's Redux Actions to update the state, or `getState()` of that component's shared state to retrieve the underlying data.
+
 ## Background to Microfronts
+
+You have an frontend web app.  It's big and complex and built by one team at your organization.  Another team has a component that you want to inject in your app.  Trouble is, this team's component
+is not written in your app's framework nor according to your apps standards.  
+
+What to do?
+
+You could take a lesson about shared services from backend the backend architectural practice of microservices.
 
 ### Lessons learned from Microservices
 
@@ -162,6 +212,8 @@ team/organization where you can uphold the protocol and manage dependencies cros
 
 ## Advanced Redux State Suggestions
 
+### Advanced API standards
+
 If you'd like to ensure your web component can handle many possible cases, such as being utilized
 several times within the root app and each instance requires its own state.  We recommend the 
 following additions to the API. Note that each Microfront component can choose to follow these
@@ -301,10 +353,25 @@ Finally, just like any API contract, this is the point of interfacing and coupli
 is well defined and structured.  We close this section with the following two additional
 recommendations:
 
-1. When utilizing the state data inside `instances[<CONTAINER KEY>]`, `named[<UNIQUE NAME>]`, and 
+##### Private/Isolated State
+
+Perhaps one of your microfront components is a complex component that has several subcomponents that use Redux to coordinate with eachother but not necessary external components. If a component has internal state that isn't part of its API, the Redux documentation [suggests having each subcomponent (subapp) have its own store](https://redux.js.org/recipes/isolatingsubapps). **For the microfront architecture, this is a bad idea**.
+
+Components cannot easily connect to multiple Redux states, meaning your microfront component would probably need to choose to either connect to the API state or the internal state.  You could build a wrapper component for connecting to the API state, and pass that data as props to the component that 
+connects to the internal state, but that's quite messy.
+
+You also lose a lot of benefits of Redux when having multiple states:
+* [Redux official FAQ: ​Can or should I create multiple stores](https://redux.js.org/faq/storesetup#can-or-should-i-create-multiple-stores-can-i-import-my-store-directly-and-use-it-in-components-myself)
+* [Stack Overflow: Redux - multiple stores, why not?](https://stackoverflow.com/a/33633850/6090140)
+
+
+Instead, when utilizing the state data inside `instances[<CONTAINER KEY>]`, `named[<UNIQUE NAME>]`, and 
 `all` and the data is not intended to be retrieved outside of the component, we recommend wrapping 
 that data in an object titled `private` (e.g. `"instances": { "1345rdq23": { "private": { "openModal": true }}}`).  The properties of `private` are assumed to be mutated without breaking the API.
-2. When creating the Redux Actions that will update the state, be mindful of the given Actions and
+
+##### Parameter validity within Actions
+
+When creating the Redux Actions that will update the state, be mindful of the given Actions and
 the validity of its parameters. The Actions are just as part of the API as the Store state.  The
 reason we don't dive into recommended practices for Actions is that the standards that Redux already
 expresses for Actions is sufficient.
