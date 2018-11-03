@@ -329,3 +329,8 @@ not be a conflict with the standards we have here.
 ### Compatible Store Package
 I'd like to create an official very small npm package for the shared store, which will simply be
 the [shared store.js file](store/src/store.js), but with an included transpiler for older browsers.
+
+#### Consider migrating away from store away from Redux-Thunk and onto Redux-Saga
+
+Saga seems to be the better way to go, especially for complex apps, which is the whole point of
+building out microfronts.
