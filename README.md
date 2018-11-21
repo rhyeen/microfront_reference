@@ -39,7 +39,7 @@ state = {
 ```
 where `<NPM PACKAGE NAME>` is a unique key specific to each microfront component.  All state of this microfront should be within its own `<NPM PACKAGE NAME>` object.
 * It should export Javascript modules for the Redux Actions that can be applied on its own part of
-the shared state.
+the shared state.  Dispatchable action strings should be namespaced with `<NPM PACKAGE NAME>`.
 * For simple interactions directly with its parent element, it should use props/attributes.
 * For complex interaction with other microfront components, it should call that component's Redux Actions to update the state, or `getState()` of that component's shared state to retrieve the underlying data.
 
@@ -170,6 +170,8 @@ state = {
 Where `<NPM PACKAGE NAME>` is the unique name of the component that owns that particular part of
 the state.  Even if a component is not explicitely an npm package, thinking of it such will ensure
 the state key is unique and recognizable.
+
+Additionally, Actions' Dispatch strings (e.g.: `store.Dispatch("ACTION_STRING"))` should be namespaced with `<NPM PACKAGE NAME>`.
 
 That is all that is needed on the state to ensure these standards are met.  However, we do suggest
 how to compose the inners of this object to make your Microfront component more conveniant to use
@@ -374,7 +376,7 @@ that data in an object titled `private` (e.g. `"instances": { "1345rdq23": { "pr
 When creating the Redux Actions that will update the state, be mindful of the given Actions and
 the validity of its parameters. The Actions are just as part of the API as the Store state.  The
 reason we don't dive into recommended practices for Actions is that the standards that Redux already
-expresses for Actions is sufficient.
+expresses for Actions is sufficient as long as the Action Dispatchable strings are namespaced with `<NPM PACKAGE NAME>`.
 
 ## Converting Existing Components (React, specifically)
 
