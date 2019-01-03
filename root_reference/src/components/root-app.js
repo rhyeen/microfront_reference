@@ -36,6 +36,11 @@ class RootApp extends connect(store)(LitElement) {
         margin-bottom: 8px;
       }
 
+      .root-description,
+      .root-code {
+        display: ${this._showDetails ? 'block' : 'none'};
+      }
+
       .component-grid {
         display: flex;
         flex-wrap: wrap;
@@ -49,8 +54,9 @@ class RootApp extends connect(store)(LitElement) {
       }
     </style>
     <div class="root-title">ROOT APP</div>
+    <button style="margin-bottom: 8px;" @click="${() => this._showDetails = !this._showDetails}">${this._showDetails ? 'Hide Details' : 'Show Details'}</button>
     <div class="root-description">
-    <span>This app can be any js app/framework, as long as it</span>
+    <span>This app can be any js app/framework, as long as it:</span>
     <ol>
     <li>imports the shared intrastore</li>
     <li>adds the microfront web components' Redux reducers</li>
@@ -91,7 +97,8 @@ class RootApp extends connect(store)(LitElement) {
 
   static get properties() {
     return {
-      _componentList: { type: Array }
+      _componentList: { type: Array },
+      _showDetails: { type: Boolean }
     }
   }
 

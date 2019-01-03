@@ -11,30 +11,23 @@ class App extends React.Component {
   }
 
   render() {
-    let { containers, locked, state, containerId } = this.props
+    let { containers, state, containerId } = this.props
 
-    let isLockedString = locked ? 'LOCKED' : 'UNLOCKED'
-
-    let containerLabel = containers[containerId].title
+    let containerLabel = containers[containerId].label
 
     let componentList = [
       {
         id: '1',
-        component: 'comp1',
-        updateContainerLabel: 'COMP_1_UPDATE_LABEL'
+        component: 'compLitElement',
+        updateContainerLabel: 'COMP_LIT_ELEMENT_UPDATE_LABEL'
       },
       {
         id: '2',
-        component: 'comp1',
-        updateContainerLabel: 'COMP_1_UPDATE_LABEL'
+        component: 'compLitElement',
+        updateContainerLabel: 'COMP_LIT_ELEMENT_UPDATE_LABEL'
       },
       {
         id: '1',
-        component: 'comp2',
-        updateContainerLabel: 'COMP_2_UPDATE_LABEL'
-      },
-      {
-        id: '5',
         component: 'compVanilla',
         updateContainerLabel: 'COMP_VANILLA_UPDATE_LABEL'
       },
@@ -49,37 +42,70 @@ class App extends React.Component {
       if (!(comp.component in state)) {
         return {
           ...comp,
-          title: 'NA'
+          label: 'NA'
         };
       }
       return {
         ...comp,
-        title: state[comp.component].containers[comp.id].title
+        label: state[comp.component].containers[comp.id].label
       }
     })
 
     let componentControls = componentContainers.map(container => {
       let keyValue = container.id + '___' + container.component + '___' + container.updateContainerLabel;
-      return React.createElement(
-        'input',
-        {
-          value: container.title,
-          onChange: this.handleInputUpdate.bind(this),
-          key: keyValue,
-          id: keyValue
-        }
-      )
+      return [
+        React.createElement(
+          'label',
+          { key: 'label1' },
+          `${container.component}.${container.id}.label: `
+        ),
+        React.createElement(
+          'input',
+          {
+            value: container.label,
+            onChange: this.handleInputUpdate.bind(this),
+            key: keyValue,
+            id: keyValue
+          }
+        ),
+        React.createElement(
+          'br',
+          { key: 'br1' }
+        ),
+      ]
     })
 
     return React.createElement(
       'div',
       null,
-      React.createElement(
-        'div',
-        null,
-        `${containerLabel} :: ${isLockedString}`
-      ),
-      componentControls
+      [
+        React.createElement(
+          'div',
+          { className: 'comp-title', key: '1' },
+          'REACT COMPONENT'
+        ),
+        React.createElement(
+          'div',
+          { className: 'comp-label', key: '2' },
+          [
+            React.createElement(
+              'div',
+              { className: 'comp-label-title', key: '1' },
+              `compReact.${containerId}.label: `
+            ),
+            React.createElement(
+              'div',
+              { className: 'comp-label-value', key: '2' },
+              `${containerLabel}`
+            )
+          ]
+        ),
+        React.createElement(
+          'div',
+          { className: 'label-edit-grid', key: '3' },
+          componentControls
+        )
+      ]
     )
   }
 }

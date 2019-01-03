@@ -1,16 +1,13 @@
 import {
-  COMP_REACT_UPDATE_LABEL,
-  COMP_REACT_LOCK,
-  COMP_REACT_UNLOCK
+  COMP_REACT_UPDATE_LABEL
 } from '../actions/app.js';
 
 const INITIAL_STATE = {
   containers: {
     'r1': {
-      title: 'test r1'
+      label: 'initial react label value'
     }
-  },
-  locked: false
+  }
 };
 
 export const compReact = (state = INITIAL_STATE, action) => {
@@ -18,18 +15,8 @@ export const compReact = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case COMP_REACT_UPDATE_LABEL:
       newState = {...state};
-      newState.containers[action.id].title = action.title;
+      newState.containers[action.id].label = action.label;
       return newState;
-    case COMP_REACT_LOCK:
-      return {
-        ...state,
-        locked: true
-      }
-    case COMP_REACT_UNLOCK:
-      return {
-        ...state,
-        locked: false
-      }
     default:
       return state;
   }

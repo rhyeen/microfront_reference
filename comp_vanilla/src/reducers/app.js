@@ -1,7 +1,7 @@
 const INITIAL_STATE = {
   containers: {
     '1': {
-      label: 'test Vanilla'
+      label: 'initial vanilla label value'
     }
   }
 };

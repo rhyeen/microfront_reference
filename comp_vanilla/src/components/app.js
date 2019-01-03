@@ -83,6 +83,11 @@ class CompVanilla extends HTMLElement {
         id: '1',
         component: 'compVanilla',
         updateContainerLabel: 'COMP_VANILLA_UPDATE_LABEL'
+      },
+      {
+        id: 'r1',
+        component: 'compReact',
+        updateContainerLabel: 'COMP_REACT_UPDATE_LABEL'
       }
     ];
 
