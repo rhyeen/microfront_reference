@@ -1,10 +1,10 @@
-export const COMP_REACT_UPDATE_TITLE = 'COMP_REACT_UPDATE_TITLE';
+export const COMP_REACT_UPDATE_LABEL = 'COMP_REACT_UPDATE_LABEL';
 export const COMP_REACT_LOCK = 'COMP_REACT_LOCK';
 export const COMP_REACT_UNLOCK = 'COMP_REACT_UNLOCK';
 
-export const compReact_updateTitle = (id, title) => {
+export const compReact_updateLabel = (id, title) => {
   return {
-    type: COMP_REACT_UPDATE_TITLE,
+    type: COMP_REACT_UPDATE_LABEL,
     id, 
     title
   };
@@ -22,13 +22,13 @@ export const compReact_unlock = () => {
   };
 }
 
-export function updateTitle(id, title) {
+export function updateLabel(id, title) {
   return (dispatch) => {
-    dispatch(compReact_updateTitle(id, title))
+    dispatch(compReact_updateLabel(id, title))
   }
 }
 
-export function updateAnyTitle(actionFunction, id, title) {
+export function updateAnyLabel(actionFunction, id, title) {
   return (dispatch) => {
     dispatch({ type: actionFunction, id: id, title: title })
   }

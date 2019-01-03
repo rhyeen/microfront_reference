@@ -12,8 +12,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  updateAnyTitle: appActions.updateAnyTitle,
-  updateTitle: appActions.updateTitle,
+  updateAnyLabel: appActions.updateAnyLabel,
+  updateLabel: appActions.updateLabel,
   lock: appActions.lock,
   unlock: appActions.unlock
 }

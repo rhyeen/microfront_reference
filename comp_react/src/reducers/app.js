@@ -1,5 +1,5 @@
 import {
-  COMP_REACT_UPDATE_TITLE,
+  COMP_REACT_UPDATE_LABEL,
   COMP_REACT_LOCK,
   COMP_REACT_UNLOCK
 } from '../actions/app.js';
@@ -16,7 +16,7 @@ const INITIAL_STATE = {
 export const compReact = (state = INITIAL_STATE, action) => {
   let newState
   switch (action.type) {
-    case COMP_REACT_UPDATE_TITLE:
+    case COMP_REACT_UPDATE_LABEL:
       newState = {...state};
       newState.containers[action.id].title = action.title;
       return newState;
