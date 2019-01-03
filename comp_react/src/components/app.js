@@ -6,8 +6,8 @@ class App extends React.Component {
     const id = event.target.id
     const splitId = id.split('___')
     const containerId = splitId[0]
-    const updateContainerTitle = splitId[2]
-    this.props.updateAnyTitle(updateContainerTitle, containerId, value)
+    const updateContainerLabel = splitId[2]
+    this.props.updateAnyLabel(updateContainerLabel, containerId, value)
   }
 
   render() {
@@ -15,33 +15,33 @@ class App extends React.Component {
 
     let isLockedString = locked ? 'LOCKED' : 'UNLOCKED'
 
-    let containerTitle = containers[containerId].title
+    let containerLabel = containers[containerId].title
 
     let componentList = [
       {
         id: '1',
         component: 'comp1',
-        updateContainerTitle: 'COMP_1_UPDATE_TITLE'
+        updateContainerLabel: 'COMP_1_UPDATE_LABEL'
       },
       {
         id: '2',
         component: 'comp1',
-        updateContainerTitle: 'COMP_1_UPDATE_TITLE'
+        updateContainerLabel: 'COMP_1_UPDATE_LABEL'
       },
       {
         id: '1',
         component: 'comp2',
-        updateContainerTitle: 'COMP_2_UPDATE_TITLE'
+        updateContainerLabel: 'COMP_2_UPDATE_LABEL'
       },
       {
         id: '5',
         component: 'compVanilla',
-        updateContainerTitle: 'COMP_VANILLA_UPDATE_TITLE'
+        updateContainerLabel: 'COMP_VANILLA_UPDATE_LABEL'
       },
       {
         id: 'r1',
         component: 'compReact',
-        updateContainerTitle: 'COMP_REACT_UPDATE_TITLE'
+        updateContainerLabel: 'COMP_REACT_UPDATE_LABEL'
       }
     ];
 
@@ -59,7 +59,7 @@ class App extends React.Component {
     })
 
     let componentControls = componentContainers.map(container => {
-      let keyValue = container.id + '___' + container.component + '___' + container.updateContainerTitle;
+      let keyValue = container.id + '___' + container.component + '___' + container.updateContainerLabel;
       return React.createElement(
         'input',
         {
@@ -77,7 +77,7 @@ class App extends React.Component {
       React.createElement(
         'div',
         null,
-        `${containerTitle} :: ${isLockedString}`
+        `${containerLabel} :: ${isLockedString}`
       ),
       componentControls
     )
