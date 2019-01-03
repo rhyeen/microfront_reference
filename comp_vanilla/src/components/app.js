@@ -5,10 +5,56 @@ compVanilla_template.innerHTML = `
   <style>
     :host {
       display: block;
+      margin: 8px;
+      border: 1px solid #D5E5B8;
+      background-color: #E1F2C2;
+      border-radius: 4px;
+      padding: 8px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      width: 400px;
+    }
+
+    .comp-title {
+      font-size: 18px;
+      font-weight: 300;
+      margin-bottom: 8px;
+    }
+
+    .comp-label {
+      margin-bottom: 24px;
+      font-family: "Courier New", Courier, monospace;
+      color: #2E393F;
+    }
+
+    .comp-label-title { 
+      font-weight: 700;
+    }
+
+    .comp-label-value { 
+      font-weight: 700;
+      color: #737373;
+      background-color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .label-edit-grid label {
+      font-size: 14px;
+    }
+
+    .label-edit-grid input {
+      font-size: 14px;
+      margin-bottom: 8px;
     }
   </style>
-  <div><slot name="container-title" onchange="test()">NO TITLE</slot></div>
-  <slot name="container-inputs">NO INPUTS</slot>
+  <div class="comp-title">VANILLAJS COMPONENT</div>
+  <div class="comp-label">
+    <div class="comp-label-title"><slot name="container-label-title">NO TITLE</slot></div>
+    <div class="comp-label-value"><slot name="container-label-value" onchange="test()">NO VALUE</slot></div>
+  </div>
+  <div class="label-edit-grid">
+    <slot name="container-inputs">NO INPUTS</slot>
+  </div>
 `;
 
 class CompVanilla extends HTMLElement {
@@ -18,29 +64,25 @@ class CompVanilla extends HTMLElement {
     this.attachShadow({mode: 'open'});
     this.shadowRoot.appendChild(compVanilla_template.content.cloneNode(true));
 
-    this._containerTitleSlot = this.shadowRoot.querySelector('slot[name=container-title]');
+    this._containerLabelTitleSlot = this.shadowRoot.querySelector('slot[name=container-label-title]');
+    this._containerLabelValueSlot = this.shadowRoot.querySelector('slot[name=container-label-value]');
     this._containerInputsSlot = this.shadowRoot.querySelector('slot[name=container-inputs]');
 
     this._componentList = [
       {
         id: '1',
-        component: 'comp1',
-        updateContainerTitle: 'COMP_1_UPDATE_TITLE'
+        component: 'compLitElement',
+        updateContainerLabel: 'COMP_LIT_ELEMENT_UPDATE_LABEL'
       },
       {
         id: '2',
-        component: 'comp1',
-        updateContainerTitle: 'COMP_1_UPDATE_TITLE'
+        component: 'compLitElement',
+        updateContainerLabel: 'COMP_LIT_ELEMENT_UPDATE_LABEL'
       },
       {
         id: '1',
-        component: 'comp2',
-        updateContainerTitle: 'COMP_2_UPDATE_TITLE'
-      },
-      {
-        id: '5',
         component: 'compVanilla',
-        updateContainerTitle: 'COMP_VANILLA_UPDATE_TITLE'
+        updateContainerLabel: 'COMP_VANILLA_UPDATE_LABEL'
       }
     ];
 
@@ -65,7 +107,7 @@ class CompVanilla extends HTMLElement {
 
   _render(state) {
     this._container = state.compVanilla.containers[this.getAttribute('containerId')];
-    this._isLocked = state.compVanilla.locked;
+    this._setLabelTitle();
     this._setAllComponentContainers(state);
     this._setSlots();
   }
@@ -75,41 +117,49 @@ class CompVanilla extends HTMLElement {
       if (!(comp.component in state)) {
         return {
           ...comp,
-          title: 'NA'
+          label: 'NA'
         };
       }
       return {
         ...comp,
-        title: state[comp.component].containers[comp.id].title
+        label: state[comp.component].containers[comp.id].label
       };
     });
   }
 
   _setSlots() {
     this._removeInputsFromSlot();
-    this._containerTitleSlot.innerHTML = this._container.title;
+    this._containerLabelValueSlot.innerHTML = this._container.label;
     this._componentContainers.forEach((comp) => {
+      let containerLabel = document.createElement('label');
+      containerLabel.innerHTML = `${comp.component}.${comp.id}.label: `;
       let containerInput = document.createElement('input');
-      containerInput.value = comp.title;
-      containerInput.id = comp.id + '___' + comp.component + '___' + comp.updateContainerTitle;
-      containerInput.onchange = this._updateTitle;
-      containerInput.addEventListener('change', this._updateTitle);
+      containerInput.value = comp.label;
+      containerInput.id = comp.id + '___' + comp.component + '___' + comp.updateContainerLabel;
+      containerInput.onchange = this._updateLabel;
+      containerInput.addEventListener('change', this._updateLabel);
+      this._containerInputsSlot.appendChild(containerLabel);
       this._containerInputsSlot.appendChild(containerInput);
+      this._containerInputsSlot.appendChild(document.createElement('br'));
     });
   }
 
-  _updateTitle(event) {
+  _setLabelTitle() {
+    this._containerLabelTitleSlot.innerHTML = `compLitElement.${this.getAttribute('containerId')}.label: `;
+  }
+
+  _updateLabel(event) {
     const value = event.target.value;
     const id = event.target.id;
     const splitId = id.split('___');
     const containerId = splitId[0];
-    const updateContainerTitle = splitId[2];
-    store.dispatch({ type: updateContainerTitle, id: containerId, title: value });
+    const updateContainerLabel = splitId[2];
+    store.dispatch({ type: updateContainerLabel, id: containerId, label: value });
   }
 
   _removeInputsFromSlot() {
     while (this._containerInputsSlot.firstChild) {
-      this._containerInputsSlot.firstChild.removeEventListener('change', this._updateTitle);
+      this._containerInputsSlot.firstChild.removeEventListener('change', this._updateLabel);
       this._containerInputsSlot.removeChild(this._containerInputsSlot.firstChild);
     }
   }

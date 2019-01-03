@@ -1,29 +1,18 @@
 const INITIAL_STATE = {
   containers: {
-    '5': {
-      title: 'test Vanilla'
+    '1': {
+      label: 'test Vanilla'
     }
-  },
-  locked: false
+  }
 };
 
 export const compVanilla = (state = INITIAL_STATE, action) => {
   let newState
   switch (action.type) {
-    case 'COMP_VANILLA_UPDATE_TITLE':
+    case 'COMP_VANILLA_UPDATE_LABEL':
       newState = {...state};
-      newState.containers[action.id].title = action.title;
+      newState.containers[action.id].label = action.label;
       return newState;
-    case 'COMP_VANILLA_LOCK':
-      return {
-        ...state,
-        locked: true
-      }
-    case 'COMP_VANILLA_UNLOCK':
-      return {
-        ...state,
-        locked: false
-      }
     default:
       return state;
   }
