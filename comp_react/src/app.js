@@ -1,5 +1,6 @@
 import App from './containers/app.js'
 import store from './store.js'
+import retargetEvents from './retarget-events-fix';
 
 class CompReactApp extends React.Component {
   constructor(props) {
@@ -8,7 +9,7 @@ class CompReactApp extends React.Component {
 
   render() {
     return React.createElement(
-      'Provider',
+      ReactRedux.Provider,
       { store: store },
       React.createElement(
         App, { containerId: this.props.containerId }
@@ -21,13 +22,15 @@ class CompReactApp extends React.Component {
 class CompReact extends HTMLElement {
   connectedCallback() {
     const mountPoint = document.createElement('div');
-    this.attachShadow({ mode: 'open' }).appendChild(mountPoint);
+    const shadowRoot = this.createShadowRoot();
+    shadowRoot.appendChild(mountPoint);
+    retargetEvents(shadowRoot);
     const containerId = this.getAttribute('containerId')
-
+    
     ReactDOM.render(
       React.createElement(CompReactApp, { containerId: containerId }),
       mountPoint
-    );
+      );
   }
 }
 

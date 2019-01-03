@@ -2,8 +2,8 @@
 
 class App extends React.Component {
   handleInputUpdate(event) {
-    const value = event.currentTarget.value
-    const id = event.currentTarget.id
+    const value = event.target.value
+    const id = event.target.id
     const splitId = id.split('___')
     const containerId = splitId[0]
     const updateContainerTitle = splitId[2]
