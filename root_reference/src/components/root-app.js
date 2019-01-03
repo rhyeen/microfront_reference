@@ -7,9 +7,11 @@ import { SharedStyles } from './shared-styles.js';
 import 'microfront_reference_comp1/src/components/app.js';
 import 'microfront_reference_comp2/src/components/app.js';
 import 'microfront_reference_comp_vanilla/src/components/app.js';
+import 'microfront_reference_comp_react/src/app.js';
 import { comp1_updateTitle } from 'microfront_reference_comp1/src/actions/app.js';
 import { comp2_updateTitle } from 'microfront_reference_comp2/src/actions/app.js';
 import { compVanilla_updateTitle } from 'microfront_reference_comp_vanilla/src/actions/app.js';
+import { compReact_updateTitle } from 'microfront_reference_comp_react/src/actions/app.js';
 
 class RootApp extends connect(store)(LitElement) {
   render() {
@@ -25,6 +27,7 @@ class RootApp extends connect(store)(LitElement) {
     <comp-one-app containerId="1" .componentList="${this._componentList}"></comp-one-app>
     <comp-one-app containerId="2" .componentList="${this._componentList}"></comp-one-app>
     <comp-two-app containerId="1" .componentList="${this._componentList}"></comp-two-app>
+    <comp-react containerId="r1"></comp-react>
     <comp-vanilla containerId="5"></comp-vanilla>
     `;
   }
@@ -57,6 +60,11 @@ class RootApp extends connect(store)(LitElement) {
         id: '5',
         component: 'compVanilla',
         updateContainerTitle: compVanilla_updateTitle
+      },
+      {
+        id: 'r1',
+        component: 'compReact',
+        updateContainerTitle: compReact_updateTitle
       }
     ];
   }

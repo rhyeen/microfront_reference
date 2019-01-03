@@ -27,6 +27,7 @@
     "microfront_reference_comp1": "^0.3.2",
     "microfront_reference_comp2": "^0.3.2",
     "microfront_reference_comp_vanilla": "0.0.1",
+    "microfront_reference_comp_react": "0.0.1",
     "microfront_reference_store": "0.0.1",
     "pwa-helpers": "^0.9.0",
     "redux": "^4.0.0",
@@ -42,10 +43,10 @@
     "gulp-replace": "^1.0.0",
     "mocha": "^5.2.0",
     "pixelmatch": "^4.0.2",
-    "polymer-cli": "^1.7.6",
+    "polymer-cli": "^1.9.4",
     "polyserve": "^0.27.0",
     "prpl-server": "^1.2.0",
     "puppeteer": "^1.5.0",
-    "wct-browser-legacy": "^1.0.1"
+    "wct-browser-legacy": "^1.0.2"
   }
 }
