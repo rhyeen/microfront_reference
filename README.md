@@ -403,3 +403,7 @@ the [shared store.js file](store/src/store.js), but with an included transpiler 
 
 Saga seems to be the better way to go, especially for complex apps, which is the whole point of
 building out microfronts.
+
+## Diagram of methodology
+
+![See https://www.lucidchart.com/documents/view/49c6037b-bcef-422d-9f53-98e1368a1f18](https://www.lucidchart.com/publicSegments/view/f20598b9-a9fb-4015-b280-3929bc4aed13/image.png)
